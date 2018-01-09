@@ -1,0 +1,52 @@
+根目录建立sh文件
+run_nmt.sh
+python -m nmt.nmt \
+    --src=vi --tgt=en \
+    --vocab_prefix=./nmt/nmt_data/vocab  \
+    --train_prefix=./nmt/nmt_data/train \
+    --dev_prefix=./nmt/nmt_data/tst2012  \
+    --test_prefix=./nmt/nmt_data/tst2013 \
+    --out_dir=./nmt/nmt_model/ \
+    --num_train_steps=3000 \
+    --steps_per_stats=100 \
+    --num_layers=2 \
+    --num_units=128 \
+    --dropout=0.2 \
+    --metrics=bleu
+    
+run_nmt_predict.sh
+head -n 100 ./nmt/nmt_data/tst2013.vi > ./nmt/nmt_data/my_infer_file.vi
+python -m nmt.nmt \
+    --model_dir=./nmt/nmt_model \
+    --ckpt=./nmt/nmt_model/translate.ckpt-12000 \
+    --out_dir=./nmt/nmt_model \
+    --vocab_prefix=./nmt/nmt_data/vocab \
+    --inference_input_file=./nmt/nmt_data/my_infer_file.vi  \
+    --inference_output_file=./nmt/nmt_data/output_infer
+
+
+run_attention_nmt.sh
+python -m nmt.nmt \
+    --attention=scaled_luong \
+    --src=vi --tgt=en \
+    --vocab_prefix=./nmt/nmt_data/vocab  \
+    --train_prefix=./nmt/nmt_data/train \
+    --dev_prefix=./nmt/nmt_data/tst2012  \
+    --test_prefix=./nmt/nmt_data/tst2013 \
+    --out_dir=./nmt/nmt_attention_model/ \
+    --num_train_steps=2000 \
+    --steps_per_stats=100 \
+    --num_layers=2 \
+    --num_units=128 \
+    --dropout=0.2 \
+    --metrics=bleu
+
+run_attention_nmt_predict.sh
+head -n 100 ./nmt/nmt_data/tst2013.vi > ./nmt_data/my_attention_infer_file.vi
+python -m nmt.nmt \
+    --model_dir=./nmt/nmt_attention_model \
+    --ckpt=./nmt/nmt_attention_model/translate.ckpt-2000 \
+    --out_dir=./nmt/nmt_attention_model \
+    --inference_input_file=./nmt/nmt_data/my_attention_infer_file.vi \
+    --inference_output_file=./nmt/nmt_data/output_attention_infer
+
